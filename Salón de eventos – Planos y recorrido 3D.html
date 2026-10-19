@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Salón de eventos – Planos y recorrido 3D</title>
+<style>
+:root{--bg:#f5f3ee;--ink:#23211e;--mut:#6a665e;--line:#d9d4c8;--card:#fff;--acc:#a9481f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1c1a;--ink:#ece8df;--mut:#a9a498;--line:#45423b;--card:#282623;--acc:#e9936b}}
+:root[data-theme="dark"]{--bg:#1d1c1a;--ink:#ece8df;--mut:#a9a498;--line:#45423b;--card:#282623;--acc:#e9936b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,serif}
+header,nav,main{max-width:1100px;margin:auto;padding-left:20px;padding-right:20px}
+header{padding-top:20px}h1{font-size:28px;margin:0 0 4px}
+.s{margin:0;color:var(--mut);font:15px system-ui,sans-serif}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px;font-family:system-ui,sans-serif}
+button{font:15px system-ui,sans-serif;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:6px;cursor:pointer}
+button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+main{padding-bottom:40px;font-family:system-ui,sans-serif}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto}
+svg{display:block;min-width:820px;width:100%;height:auto;background:#fff;fill:#222;font-family:system-ui,sans-serif}
+table{border-collapse:collapse;margin-top:14px;font-size:15px}td,th{border-bottom:1px solid var(--line);padding:5px 14px 5px 0;text-align:left}
+.n{color:var(--mut);font-size:14px;margin-top:12px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#v{position:relative;height:calc(100vh - 250px);min-height:380px;border-radius:8px;overflow:hidden;background:#cfe6f3;touch-action:none}
+#v canvas{display:block}
+#pad{position:absolute;left:10px;bottom:10px;display:grid;grid-template-columns:repeat(3,46px);gap:4px;touch-action:none}
+#pad button{height:46px;padding:0;opacity:.85}
+</style></head><body>
+<header><h1>Salón de eventos con dos locales</h1><p class="s">Lote de 10 × 30 m, frente al oeste. Plano de ubicación, planta y recorrido en 3D.</p></header>
+<nav id="tabs"><button data-t="a" class="on">1. Ubicación</button><button data-t="b">2. Planta</button><button data-t="c">3. Recorrido 3D</button></nav>
+<main>
+<section id="a" class="on"><div class="card"><svg id="s1" viewBox="0 0 1060 440"></svg></div>
+<p class="n">Supuesto: se construye hasta los linderos, porque los lados están desocupados. Falta confirmar los retiros y aislamientos que exija la oficina de planeación del municipio.</p></section>
+<section id="b"><div class="card"><svg id="s2" viewBox="0 0 1060 440"></svg></div>
+<table><tr><th>Espacio</th><th>Medida</th><th>Área</th></tr>
+<tr><td>Local 1 y Local 2 (cada uno)</td><td>3,50 × 3,00 m</td><td>10,5 m²</td></tr>
+<tr><td>San Juan (paso de carros)</td><td>3,00 × 6,00 m</td><td>18 m²</td></tr>
+<tr><td>Cocina (solo barra de servicio)</td><td>1,75 × 3,00 m</td><td>5,25 m²</td></tr><tr><td>Bodega, una a cada lado del San Juan (2)</td><td>1,75 × 3,00 m cada una</td><td>5,25 m² cada una</td></tr>
+<tr><td>Baños del salón</td><td>1,75 × 3,00 m</td><td>5,25 m²</td></tr>
+<tr><td>Salón de eventos</td><td>10,00 × 24,00 m</td><td>240 m²</td></tr>
+<tr><td>Franjas abiertas con pinos (2)</td><td>18,00 × 2,00 m cada una</td><td>36 m² en total</td></tr></table>
+<p class="n">Supuestos: la distribución de atrás sigue tu boceto (cocina y bodega a la izquierda, bodega y baños a la derecha); los locales no tienen baño propio; el centro del salón queda libre y techado, y la luz entra solo por las dos franjas junto a las paredes; columnas cada 4,5 m; muros de 15 cm.</p></section>
+<section id="c"><div class="bar"><button data-p="fach">Fachada</button><button data-p="aer">Vista aérea</button><button data-p="top">Desde arriba, sin techo</button><button data-p="san">Entrar por el San Juan</button><button data-p="sal">Dentro del salón</button><button data-p="fon">Desde el fondo</button><button id="rt">Ocultar techo</button></div>
+<div id="v"><div id="pad"><span></span><button data-k="KeyW">▲</button><span></span><button data-k="KeyA">◀</button><button data-k="KeyS">▼</button><button data-k="KeyD">▶</button></div></div>
+<p class="n">Arrastra para girar la vista y usa la rueda para acercar. Al caminar: W A S D o las flechas, y Shift para ir más rápido. En el celular usa los botones.</p></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const TT=.15,FD=[9,13.5,18,22.5,27];
+const WALLS=[
+{k:'d',f:0,a:0,b:3.5,h:3.3,o:[[.3,1.7,0,2.2,'g'],[1.9,3.2,.9,2.1,'g']]},
+{k:'d',f:0,a:6.5,b:10,h:3.3,o:[[6.8,8.1,.9,2.1,'g'],[8.3,9.7,0,2.2,'g']]},
+{k:'w',f:0,a:0,b:6,h:3.3},{k:'w',f:10,a:0,b:6,h:3.3},{k:'w',f:0,a:6,b:30,h:4.6},{k:'w',f:10,a:6,b:30,h:4.6},
+{k:'d',f:30,a:0,b:10,h:4.6},{k:'d',f:3,a:0,b:3.5,h:3.3},{k:'d',f:3,a:6.5,b:10,h:3.3},
+{k:'w',f:3.5,a:0,b:6,h:3.3,o:[[4,5,0,2.1,'p']]},{k:'w',f:6.5,a:0,b:6,h:3.3,o:[[4,5,0,2.1,'p']]},{k:'w',f:1.75,a:3,b:6,h:3.3},{k:'w',f:8.25,a:3,b:6,h:3.3},{k:'d',f:4.5,a:8.25,b:9.4,h:2.6},
+{k:'d',f:6,a:0,b:3.5,h:4.6,o:[[.2,1.55,0,2.2,'s']]},{k:'d',f:6,a:6.5,b:10,h:4.6,o:[[8.5,9.5,0,2.1,'p']]},
+
+];
+const $=i=>document.getElementById(i);
+/* ---------- 2D ---------- */
+const S=28,OX=110,OY=80,X=d=>OX+d*S,Y=w=>OY+w*S;
+const R=(d0,d1,w0,w1,f,x='')=>`<rect x="${X(d0)}" y="${Y(w0)}" width="${(d1-d0)*S}" height="${(w1-w0)*S}" fill="${f}" ${x}/>`;
+const T=(d,w,t,z=13,x='')=>`<text x="${X(d)}" y="${Y(w)}" dy="4" font-size="${z}" text-anchor="middle" ${x}>${t}</text>`;
+const L=(d,w,a,z=13)=>a.map((t,i)=>T(d,w+(i-(a.length-1)/2)*z*1.3/S,t,i?z-1:z,i?'fill="#555"':'font-weight="600"')).join('');
+const DH=(d0,d1,w,t)=>`<g stroke="#a9481f"><line x1="${X(d0)}" x2="${X(d1)}" y1="${Y(w)}" y2="${Y(w)}"/><line x1="${X(d0)}" x2="${X(d0)}" y1="${Y(w)-5}" y2="${Y(w)+5}"/><line x1="${X(d1)}" x2="${X(d1)}" y1="${Y(w)-5}" y2="${Y(w)+5}"/></g>`+T((d0+d1)/2,w-.22,t,12,'fill="#a9481f"');
+const DV=(w0,w1,d,t)=>`<g stroke="#a9481f"><line y1="${Y(w0)}" y2="${Y(w1)}" x1="${X(d)}" x2="${X(d)}"/><line y1="${Y(w0)}" y2="${Y(w0)}" x1="${X(d)-5}" x2="${X(d)+5}"/><line y1="${Y(w1)}" y2="${Y(w1)}" x1="${X(d)-5}" x2="${X(d)+5}"/></g><text transform="translate(${X(d)+15},${Y((w0+w1)/2)}) rotate(-90)" font-size="12" text-anchor="middle" fill="#a9481f">${t}</text>`;
+const NA=(x,y)=>`<g transform="translate(${x},${y})"><path d="M0,-26L9,6L0,0L-9,6Z"/><text y="24" text-anchor="middle" font-size="14" font-weight="700">N</text></g>`;
+const WR=(k,f,a,b,c='#2b2b2b')=>k=='d'?R(f-TT/2,f+TT/2,a,b,c):R(a,b,f-TT/2,f+TT/2,c);
+function walls(){let s='';WALLS.forEach(w=>{let c=w.a;(w.o||[]).slice().sort((p,q)=>p[0]-q[0]).forEach(o=>{s+=WR(w.k,w.f,c,o[0]);c=o[1];s+=WR(w.k,w.f,o[0],o[1],{g:'#4aa3d6',p:'#a86f3a',s:'#888'}[o[4]])});s+=WR(w.k,w.f,c,w.b)});return s}
+function cols(){let s='';FD.forEach(d=>{s+=R(d-.15,d+.15,-.075,.3,'#777')+R(d-.15,d+.15,9.7,10.075,'#777')+R(d-.15,d+.15,1.85,2.15,'#777')+R(d-.15,d+.15,7.85,8.15,'#777')});return s}
+const gate=R(-.06,.12,3.5,5,'#111')+`<line x1="${X(-3)}" x2="${X(-.4)}" y1="${Y(5)}" y2="${Y(5)}" stroke="#111" stroke-width="2"/><path d="M${X(-.4)},${Y(5)}l-9,-5v10z"/>`+T(-1.6,4.3,'Entrada',12)+T(-1.6,5.7,'de carros',12);
+const STRIP=R(9,27,0,2,'#d5ebc8','stroke="#4b8a3a" stroke-dasharray="6 4"')+R(9,27,8,10,'#d5ebc8','stroke="#4b8a3a" stroke-dasharray="6 4"'),PINES=[11,15.5,20,24.5].map(d=>[.8,9.2].map(w=>`<circle cx="${X(d)}" cy="${Y(w)}" r="22" fill="#4b8a3a" opacity=".6"/>`).join('')).join('');
+const dims=DH(0,6,-.9,'6,00')+DH(6,30,-.9,'24,00')+DH(0,30,-1.7,'30,00')+DV(0,3.5,31,'3,50')+DV(3.5,6.5,31,'3,00')+DV(6.5,10,31,'3,50')+DV(0,10,32.4,'10,00');
+$('s1').innerHTML=R(-3.9,-.5,-3.6,12,'#cfcfcf')+`<text transform="translate(${X(-2.2)},${Y(5)}) rotate(-90)" text-anchor="middle" font-size="15" letter-spacing="4">CALLE</text>`
++R(0,30,-1.5,0,'#f1efe6','stroke="#bbb" stroke-dasharray="5 4"')+R(0,30,10,11.5,'#f1efe6','stroke="#bbb" stroke-dasharray="5 4"')+T(15,-.75,'Lote vecino, sin construir',12,'fill="#777"')+T(15,10.75,'Lote vecino, sin construir',12,'fill="#777"')
++R(0,30,0,10,'#e9d9bd')+R(0,6,0,10,'#f4e4c6')+STRIP+walls()+cols()+gate
++L(3,1.75,['LOCAL 1'])+L(3,8.25,['LOCAL 2'])+L(3,5,['SAN JUAN'])
++PINES+L(18,5,['SALÓN DE EVENTOS','Centro libre y techado. La luz entra por las franjas con pinos'],14)
++DH(0,30,-2.5,'Lote: 10 × 30 m = 300 m²')+DV(0,10,32.4,'10,00')+NA(1020,70)
++`<text x="${X(0)}" y="${Y(12.7)}" font-size="13">Frente hacia el oeste</text><g stroke="#222" stroke-width="2"><line x1="${X(22)}" x2="${X(27)}" y1="${Y(12.4)}" y2="${Y(12.4)}"/></g><text x="${X(24.5)}" y="${Y(12.4)+18}" font-size="12" text-anchor="middle">5 m</text>`;
+$('s2').innerHTML=R(0,30,0,10,'#fff')+R(0,3,0,3.5,'#f4e4c6')+R(0,3,6.5,10,'#f4e4c6')+R(0,6,3.5,6.5,'#e9e9e6')+R(3,6,0,1.75,'#dcebd2')+R(3,6,1.75,3.5,'#e6def0')+R(3,6,6.5,8.25,'#e6def0')+R(3,6,8.25,10,'#cfe3ee')+R(6,30,0,10,'#fbf8ef')
++STRIP+R(3.1,5.6,.08,.35,'#b98b5a')+walls()+cols()+gate
++PINES
++L(1.5,1.75,['LOCAL 1','3,50 × 3,00'],12)+L(1.5,8.25,['LOCAL 2','3,50 × 3,00'],12)
++L(3,5,['SAN JUAN','3 × 6 m','paso de carros'],12)+T(4.5,1.1,'COCINA',10,'font-weight="600"')+T(4.5,2.6,'BODEGA',10,'font-weight="600"')+T(4.5,7.4,'BODEGA',10,'font-weight="600"')+T(5.25,9.1,'BAÑOS',10,'font-weight="600"')
++L(18,5,['SALÓN DE EVENTOS','24 × 10 m = 240 m²','Centro libre y techado, sin apertura'],14)+L(28.5,5,['Pared blanca','sin pinos'],11)
++dims+NA(1020,70)
++`<text x="${X(0)}" y="${Y(12.1)}" font-size="12">Azul: vidrio. Negro grueso: portón. Gris: columnas. Franjas verdes: abiertas al cielo, con pinos junto a la pared.</text>`;
+/* ---------- tabs ---------- */
+let on3=false;
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x==b));document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id==b.dataset.t));on3=b.dataset.t=='c';if(on3){rs();last=performance.now();requestAnimationFrame(loop)}});
+/* ---------- 3D ---------- */
+const sc=new THREE.Scene();sc.background=new THREE.Color(0xcfe6f3);
+const cam=new THREE.PerspectiveCamera(60,1,.1,300),ren=new THREE.WebGLRenderer({antialias:true});ren.shadowMap.enabled=true;$('v').appendChild(ren.domElement);
+sc.add(new THREE.HemisphereLight(0xffffff,0x998877,.8));
+const sun=new THREE.DirectionalLight(0xffffff,.65);sun.position.set(-15,40,-12);sun.target.position.set(15,0,5);sc.add(sun,sun.target);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-40,right:40,top:40,bottom:-40,far:120});
+const M=c=>new THREE.MeshLambertMaterial({color:c}),mw=M(0xfbfaf6),mg=M(0xd2cfc8),mroof=M(0xe6e0d4),mblk=M(0x151515),mwood=M(0x8a5a33),mgreen=M(0x3f7d3a),mpine=M(0x2f6b3a),mbrick=M(0xb86b45),mtrunk=M(0x6b4a2b),mglass=new THREE.MeshLambertMaterial({color:0x9fd0e6,transparent:true,opacity:.35});
+const COL=[];
+function B(d0,d1,y0,y1,w0,w1,m,c,g){const e=new THREE.Mesh(new THREE.BoxGeometry(d1-d0,y1-y0,w1-w0),m);e.position.set((d0+d1)/2,(y0+y1)/2,(w0+w1)/2);e.castShadow=e.receiveShadow=true;(g||sc).add(e);if(c&&y0<1.2)COL.push([d0,d1,w0,w1]);return e}
+const WB=(w,a,b,y0,y1,m,c)=>w.k=='d'?B(w.f-TT/2,w.f+TT/2,y0,y1,a,b,m,c):B(a,b,y0,y1,w.f-TT/2,w.f+TT/2,m,c);
+const PB=(w,a,b,y0,y1,m)=>{const f=w.f+.09,t=.04;w.k=='d'?B(f-t/2,f+t/2,y0,y1,a,b,m):B(a,b,y0,y1,f-t/2,f+t/2,m)};
+WALLS.forEach(w=>{let c=w.a;(w.o||[]).slice().sort((p,q)=>p[0]-q[0]).forEach(o=>{
+ if(o[0]>c)WB(w,c,o[0],0,w.h,mw,1);if(o[2]>0)WB(w,o[0],o[1],0,o[2],mw,1);if(o[3]<w.h)WB(w,o[0],o[1],o[3],w.h,mw,0);
+ PB(w,o[0],o[2]>0?o[1]:(o[0]+o[1])/2,o[2],o[3],{g:mglass,p:mwood,s:mw}[o[4]]);c=o[1]});
+ if(w.b>c)WB(w,c,w.b,0,w.h,mw,1)});
+/* suelo, calle, lote */
+const gr=new THREE.Mesh(new THREE.PlaneGeometry(260,260),M(0xc9d9b0));gr.rotation.x=-Math.PI/2;gr.position.set(15,-.06,5);gr.receiveShadow=true;sc.add(gr);
+B(-10,-1.5,-.05,-.01,-60,70,M(0x6f6f6f));B(-1.5,0,-.05,0,-60,70,M(0xbdbdb5));B(0,30,-.05,.02,0,10,mg);
+/* portón, dintel del San Juan */
+B(-.075,.075,2.6,3.3,3.5,6.5,mw);[3.5,6.5].forEach(z=>B(-.12,.12,0,2.6,z-.1,z+.1,mblk));
+B(-.16,-.1,.1,.2,3.5,5,mblk);B(-.16,-.1,2.4,2.5,3.5,5,mblk);for(let i=0;i<=12;i++)B(-.15,-.11,.1,2.5,3.5+i*.115,3.54+i*.115,mblk);
+B(5.93,6.07,3.3,4.6,3.5,6.5,mw);B(3.1,5.6,0,.95,.08,.4,mwood,1);
+/* techos */
+const RG=new THREE.Group();sc.add(RG);
+B(0,6,3.3,3.5,0,10,mroof,0,RG);[[0,2],[8,10]].forEach(([a,b])=>{B(6,9,4.6,4.8,a,b,mroof,0,RG);B(27,30,4.6,4.8,a,b,mroof,0,RG)});
+const th0=Math.atan(1.2/3),sl=Math.hypot(3,1.2);
+[[3.5,-th0],[6.5,th0]].forEach(([z,r])=>{const e=new THREE.Mesh(new THREE.BoxGeometry(24,.15,sl),mroof);e.position.set(18,5.72,z);e.rotation.x=r;e.castShadow=true;RG.add(e)});
+const gs=new THREE.Shape([[2,4.6],[8,4.6],[8,5.2],[5,6.4],[2,5.2]].map(p=>new THREE.Vector2(p[0],p[1])));[6,30].forEach(d=>{const e=new THREE.Mesh(new THREE.ExtrudeGeometry(gs,{depth:.15,bevelEnabled:false}),mw);e.rotation.y=-Math.PI/2;e.position.set(d+.075,0,0);e.castShadow=true;RG.add(e)});
+[2,8].forEach(w=>B(9,27,4.95,5.15,w-.15,w+.15,mroof,0,RG));
+for(let i=0;i<9;i++){const d=9+i*2.25;[0,8].forEach((w0,j)=>{B(d-.06,d+.06,5,5.15,w0,w0+2,mwood,0,RG);B(d-.03,d+.03,4.1+(i*37%10)/12,5,w0+.4+((i+j*3)*53%12)/8,w0+.43+((i+j*3)*53%12)/8,mgreen,0,RG)})}
+/* columnas */
+FD.forEach(d=>{B(d-.15,d+.15,0,4.6,-.075,.3,mw,1);B(d-.15,d+.15,0,4.6,9.7,10.075,mw,1);[2,8].forEach(w=>B(d-.15,d+.15,0,4.95,w-.15,w+.15,mw,1))});
+/* jardineras y pinos */
+const mesh=(g,m,x,y,z)=>{const e=new THREE.Mesh(g,m);e.position.set(x,y,z);e.castShadow=true;sc.add(e)};
+[.8,9.2].forEach(w=>{B(9.3,26.7,0,.4,w-.45,w+.45,mbrick,1);for(let d=9.8;d<26.5;d+=1.2)mesh(new THREE.SphereGeometry(.3,10,8),mgreen,d,.6,w+(d%2<1?.25:-.25))});
+[11,15.5,20,24.5].forEach(d=>[.8,9.2].forEach(w=>{mesh(new THREE.CylinderGeometry(.1,.14,1.5,8),mtrunk,d,1.1,w);[[.8,1.8,2.1],[.65,1.6,3.1],[.5,1.5,4]].forEach(c=>mesh(new THREE.ConeGeometry(c[0],c[1],10),mpine,d,c[2],w))}));
+/* controles */
+let mode='o',th=2.75,ph=1.3,R3=24,tgt=new THREE.Vector3(6,1.5,5),W={p:new THREE.Vector3(-4,1.65,5),yaw:0,pit:0},K={},last=0,drag=0,px=0,py=0;
+const orb=(a,b,r,t)=>{mode='o';th=a;ph=b;R3=r;tgt.set(...t);RG.visible=true;$('rt').textContent='Ocultar techo'};
+const wk=(d,w,y)=>{mode='w';W.p.set(d,1.65,w);W.yaw=y;W.pit=0;RG.visible=true;$('rt').textContent='Ocultar techo'};
+const PS={fach:()=>orb(2.75,1.3,24,[6,1.5,5]),aer:()=>orb(2.6,.6,48,[15,0,5]),top:()=>{orb(3.14,.08,46,[15,0,5]);RG.visible=false;$('rt').textContent='Mostrar techo'},san:()=>wk(-4,5,0),sal:()=>wk(7.2,5,0),fon:()=>wk(28.5,5,Math.PI)};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=PS[b.dataset.p]);
+$('rt').onclick=()=>{RG.visible=!RG.visible;$('rt').textContent=RG.visible?'Ocultar techo':'Mostrar techo'};
+const cv=ren.domElement;
+cv.onpointerdown=e=>{drag=1;px=e.clientX;py=e.clientY;cv.setPointerCapture(e.pointerId)};cv.onpointerup=()=>drag=0;
+cv.onpointermove=e=>{if(!drag)return;const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;
+ if(mode=='o'){th-=dx*.005;ph=Math.min(1.5,Math.max(.05,ph-dy*.005))}else{W.yaw+=dx*.005;W.pit=Math.min(1.2,Math.max(-1.2,W.pit-dy*.004))}};
+cv.addEventListener('wheel',e=>{e.preventDefault();R3=Math.min(70,Math.max(8,R3*(1+Math.sign(e.deltaY)*.1)))},{passive:false});
+addEventListener('keydown',e=>{if(on3){K[e.code]=1;if(e.code.startsWith('Arrow'))e.preventDefault()}});addEventListener('keyup',e=>K[e.code]=0);
+document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;b.onpointerdown=()=>{K[k]=1};['onpointerup','onpointerleave','onpointercancel'].forEach(n=>b[n]=()=>{K[k]=0})});
+const hit=(x,z)=>COL.some(c=>x>c[0]-.28&&x<c[1]+.28&&z>c[2]-.28&&z<c[3]+.28);
+function rs(){const v=$('v');ren.setSize(v.clientWidth,v.clientHeight);cam.aspect=v.clientWidth/v.clientHeight;cam.updateProjectionMatrix()}
+addEventListener('resize',()=>on3&&rs());
+function loop(t){if(!on3)return;requestAnimationFrame(loop);const dt=Math.min((t-last)/1000,.1);last=t;
+ if(mode=='w'){const f=(K.KeyW||K.ArrowUp?1:0)-(K.KeyS||K.ArrowDown?1:0),s=(K.KeyD?1:0)-(K.KeyA?1:0),v=(K.ShiftLeft?6:3)*dt;
+  W.yaw+=((K.ArrowRight?1:0)-(K.ArrowLeft?1:0))*1.6*dt;const c=Math.cos(W.yaw),n=Math.sin(W.yaw),dx=(c*f-n*s)*v,dz=(n*f+c*s)*v;
+  if(!hit(W.p.x+dx,W.p.z))W.p.x+=dx;if(!hit(W.p.x,W.p.z+dz))W.p.z+=dz;
+  cam.position.copy(W.p);cam.lookAt(W.p.x+Math.cos(W.yaw)*Math.cos(W.pit),W.p.y+Math.sin(W.pit),W.p.z+Math.sin(W.yaw)*Math.cos(W.pit))}
+ else{cam.position.set(tgt.x+R3*Math.sin(ph)*Math.cos(th),tgt.y+R3*Math.cos(ph),tgt.z+R3*Math.sin(ph)*Math.sin(th));cam.lookAt(tgt)}
+ ren.render(sc,cam)}
+</script></body></html>
